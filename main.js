@@ -91,7 +91,9 @@ class ServiceNowAdapter extends EventEmitter {
 healthcheck(callback) {
   let callbackData = null;
   let callbackError = null;
-  this.getRecord( (result, error) => {
+
+
+ this.getRecord( (result, error) => {
    if (error) {
        callbackError=error;
      
@@ -159,8 +161,9 @@ healthcheck(callback) {
     if (error) {
      callbackError=error
     }
-    
+    log.info("getRecord -------data......>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+data);
     var jsonstring = JSON.stringify(data);
+     log.info("getRecord -------jsonstring......>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+jsonstring);
     let jsonObject =  JSON.parse(jsonstring);
     let jsonresultobj = JSON.parse(jsonObject.body);
      log.info("jsonresultobj.result.length means the length of the array::"+jsonresultobj.result.length);
@@ -193,18 +196,19 @@ healthcheck(callback) {
    *   handles the response.
    */
   postRecord(callback) {
-      log.info("Calling ............................postRecord");
+      log.info("Calling ............................ppostRecord");
      let callbackData = null;
     let callbackError = null;
   
-    this.connector.post(this.connector,(data, error) => {
+    this.connector.post((data, error) => {
    if (error) {
     
       callbackError=error
     }
-    callbackData=data;
-    
+    //callbackData=data;
+    log.info("PostRecord1 -------data......>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+data);
    var jsonstring = JSON.stringify(data);
+   //log.info("postRecord -------jsonstring......>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+jsonstring);
    let jsonObject =  JSON.parse(jsonstring);
     let jsonresultobj = JSON.parse(jsonObject.body);
     log.info("PostRecord -------jsonresultobj.result.length means the length of the array::"+jsonresultobj.result.length);
@@ -219,6 +223,7 @@ healthcheck(callback) {
          work_end: jsonresultobjresult.work_end,
          change_ticket_key: jsonresultobjresult.sys_id
                             }
+        callbackData=data;                            
         return callback(serviceNowjsonResult, callbackError);
   });
   }

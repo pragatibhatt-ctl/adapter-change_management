@@ -213,7 +213,7 @@ class ServiceNowConnector {
     uri,
   };
   log.info("sendrequest uri >>>>>>>>>>>>>>>>>>>>>>>>>>>"+uri);
-  log.info("sendrequest baseUrlbaseUrl >>>>>>>>>>>>>>>>>>>>>>>>>>>"+baseUrl);
+  log.info("sendrequest baseUrlbaseUrl >>>>>>>>>>>>>>>>>>>>>>>>>>>"+requestOptions.baseUrl);
   request(requestOptions, (error, response, body) => {
     this.processRequestResults(error, response, body, (processedResults, processedError) => callback(processedResults, processedError));
   });

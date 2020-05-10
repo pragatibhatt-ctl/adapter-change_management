@@ -10,46 +10,52 @@
   ],
   "methods": [
     {
-      "name": "getRecord",
-      "summary": "Get First Change Ticket",
-      "description": "Get the first ServiceNow change management ticket.",
-      "input": [],
-      "output": {
+    "name": "getRecord",
+    "summary": "Get Change Tickets",
+    "description": "Get the first ServiceNow change management ticket.",
+    "input": [],
+    "output": {
         "name": "changeTicket",
-        "type": "object",
-        "description": "The first change change management ticket document.",
+        "type": "array",
+        "description": "An array of objects. Each element is a change management ticket document.",
         "schema": {
-          "title": "changeTicket",
-          "$ref": "changeRequest#/definitions/changeTicket"
+        "type": "array",
+        "items": {
+            "title": "changeTicket",
+            "$ref": "changeRequest#/definitions/changeTicket"
         }
-      },
-      "roles": [
-        "admin",
-        "engineer",
-        "operator"
-      ],
-      "task": true
+        }
     },
-    {
-      "name": "postRecord",
-      "summary": "Post Change Ticket",
-      "description": "Post ServiceNow change management ticket.",
-      "input": [],
-      "output": {
-        "name": "changeTicket",
-        "type": "object",
-        "description": "The  change change management ticket document.",
-        "schema": {
-          "title": "changeTicket",
-          "$ref": "changeRequest#/definitions/changeTicket"
-        }
-      },
-      "roles": [
+    "roles": [
         "admin",
         "engineer",
         "operator"
-      ],
-      "task": true
+    ],
+    "task": true
+},
+{
+  "name": "postRecord",
+  "summary": "Post Change Tickets",
+  "description": "Post the first ServiceNow change management ticket.",
+  "input": [],
+  "output": {
+    "name": "changeTicket",
+    "type": "array",
+    "description": "An change management ticket document.",
+    "schema": {
+      "type": "array",
+      "items": {
+        "title": "changeTicket",
+        "$ref": "changeRequest#/definitions/changeTicket"
+      }
     }
+  },
+  "roles": [
+    "admin",
+    "engineer",
+    "operator"
+  ],
+  "task": true
+}
   ]
 }
