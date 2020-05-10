@@ -1,6 +1,5 @@
 // Import built-in Node.js package path.
 const path = require('path');
-
 /**
  * Import the ServiceNowConnector class from local Node.js module connector.js
  *   and assign it to constant ServiceNowConnector.
@@ -8,14 +7,12 @@ const path = require('path');
  * Built-in module path's join method constructs the absolute filename.
  */
 const ServiceNowConnector = require(path.join(__dirname, '/connector.js'));
-
 /**
  * Import built-in Node.js package events' EventEmitter class and
  * assign it to constant EventEmitter. We will create a child class
  * from this class.
  */
 const EventEmitter = require('events').EventEmitter;
-
 /**
  * The ServiceNowAdapter class.
  *
@@ -25,7 +22,6 @@ const EventEmitter = require('events').EventEmitter;
  *   class.
  */
 class ServiceNowAdapter extends EventEmitter {
-
   /**
    * Here we document the ServiceNowAdapter class' callback. It must follow IAP's
    *   data-first convention.
@@ -33,7 +29,6 @@ class ServiceNowAdapter extends EventEmitter {
    * @param {(object|string)} responseData - The entire REST API response.
    * @param {error} [errorMessage] - An error thrown by REST API call.
    */
-
   /**
    * Here we document the adapter properties.
    * @typedef {object} ServiceNowAdapter~adapterProperties - Adapter
@@ -44,7 +39,6 @@ class ServiceNowAdapter extends EventEmitter {
    * @property {string} auth.password - Login password.
    * @property {string} serviceNowTable - The change request table name.
    */
-
   /**
    * @memberof ServiceNowAdapter
    * @constructs
@@ -66,8 +60,10 @@ class ServiceNowAdapter extends EventEmitter {
       password: this.props.auth.password,
       serviceNowTable: this.props.serviceNowTable
     });
+    log.info('url>>>>>>>>>>>>'+this.connector.url);
+    log.info('username>>>>>>>>>>>>>>>>'+this.connector.username);
+    log.info('password>>>>>>>>>>>>>>'+this.connector.password);
   }
-
   /**
    * @memberof ServiceNowAdapter
    * @method connect
@@ -82,7 +78,6 @@ class ServiceNowAdapter extends EventEmitter {
     // in its own method.
     this.healthcheck();
   }
-
   /**
  * @memberof ServiceNowAdapter
  * @method healthcheck
@@ -94,49 +89,24 @@ class ServiceNowAdapter extends EventEmitter {
  *   that handles the response.
  */
 healthcheck(callback) {
- this.getRecord((result, error) => {
-   /**
-    * For this lab, complete the if else conditional
-    * statements that check if an error exists
-    * or the instance was hibernating. You must write
-    * the blocks for each branch.
-    */
+  let callbackData = null;
+  let callbackError = null;
+  this.getRecord( (result, error) => {
    if (error) {
-     /**
-      * Write this block.
-      * If an error was returned, we need to emit OFFLINE.
-      * Log the returned error using IAP's global log object
-      * at an error severity. In the log message, record
-      * this.id so an administrator will know which ServiceNow
-      * adapter instance wrote the log message in case more
-      * than one instance is configured.
-      * If an optional IAP callback function was passed to
-      * healthcheck(), execute it passing the error seen as an argument
-      * for the callback's errorMessage parameter.
-      */
-      callbackError=error;
-      log.info("before onfline callbackData:"+callbackError);
+       callbackError=error;
+     
+      log.info("before offline callbackData:"+callbackError);
       this.emitOffline();
-      log.info("after callbackData:"+callbackError);
+      log.info("after offline callbackData:"+callbackError);
    } else {
-     /**
-      * Write this block.
-      * If no runtime problems were detected, emit ONLINE.
-      * Log an appropriate message using IAP's global log object
-      * at a debug severity.
-      * If an optional IAP callback function was passed to
-      * healthcheck(), execute it passing this function's result
-      * parameter as an argument for the callback function's
-      * responseData parameter.
-      */
       callbackData=result;
+      log.info("before online callbackData:"+callbackData);
+      this.emitOnline();
       log.info("after online callbackData:"+callbackData);
-     this.emitOnline();
-     log.info("after online callbackData:"+callbackData);
    }
+  
  });
 }
-
   /**
    * @memberof ServiceNowAdapter
    * @method emitOffline
@@ -148,7 +118,6 @@ healthcheck(callback) {
     this.emitStatus('OFFLINE');
     log.warn('ServiceNow: Instance is unavailable.');
   }
-
   /**
    * @memberof ServiceNowAdapter
    * @method emitOnline
@@ -160,7 +129,6 @@ healthcheck(callback) {
     this.emitStatus('ONLINE');
     log.info('ServiceNow: Instance is available.');
   }
-
   /**
    * @memberof ServiceNowAdapter
    * @method emitStatus
@@ -173,7 +141,6 @@ healthcheck(callback) {
   emitStatus(status) {
     this.emit(status, { id: this.id });
   }
-
   /**
    * @memberof ServiceNowAdapter
    * @method getRecord
@@ -184,47 +151,37 @@ healthcheck(callback) {
    *   handles the response.
    */
   getRecord(callback) {
-    /**
-     * Write the body for this function.
-     * The function is a wrapper for this.connector's get() method.
-     * Note how the object was instantiated in the constructor().
-     * get() takes a callback function.
-     */          
+    log.info("Calling ............................getRecord");
     let callbackData = null;
     let callbackError = null;
    
-this.connector.get((data, error) => {
+    this.connector.get((data, error) => {
     if (error) {
      callbackError=error
     }
     
     var jsonstring = JSON.stringify(data);
-    // jsonObject will contain a valid JavaScript object
-    let jsonObject =  JSON.parse(jsonstring);//eval('(' + jsonstring + ')');
-    let jsonbodystirng = JSON.stringify(jsonObject.body);
+    let jsonObject =  JSON.parse(jsonstring);
     let jsonresultobj = JSON.parse(jsonObject.body);
-     //log.info("call data in json13:"+JSON.stringify(jsonresultobj.result[0]));
-     log.info("jsonresultobj.result.length array::"+jsonresultobj.result.length);
-     let servicejsonObjResult=null;
+     log.info("jsonresultobj.result.length means the length of the array::"+jsonresultobj.result.length);
+     let serviceNowjsonResult=null;
      for(let i=0;i<jsonresultobj.result.length; i++){
         let servicejsonobjarray= JSON.stringify(jsonresultobj.result[i]);     
          let jsonresultobjresultarray = JSON.parse(servicejsonobjarray);
-         servicejsonObjResult=[{
-                               change_ticket_number: jsonresultobjresultarray.number,
-                                active: jsonresultobjresultarray.active,
-                                priority: jsonresultobjresultarray.priority,
-                                description: jsonresultobjresultarray.description,
-                                work_start: jsonresultobjresultarray.work_start,
-                                work_end: jsonresultobjresultarray.work_end,
-                                change_ticket_key: jsonresultobjresultarray.sys_id
-                            }
+         serviceNowjsonResult=[{
+                change_ticket_number: jsonresultobjresultarray.number,
+                active: jsonresultobjresultarray.active,
+                priority: jsonresultobjresultarray.priority,
+                description: jsonresultobjresultarray.description,
+                work_start: jsonresultobjresultarray.work_start,
+                work_end: jsonresultobjresultarray.work_end,
+                change_ticket_key: jsonresultobjresultarray.sys_id
+                }
           ]
      }
         callbackData=data;
-        return callback(servicejsonObjResult, callbackError);
+        return callback(serviceNowjsonResult, callbackError);
   });
- // log.info("call data in json1:"+JSON.stringify(calldata));
-  
   }
   /**
    * @memberof ServiceNowAdapter
@@ -236,16 +193,10 @@ this.connector.get((data, error) => {
    *   handles the response.
    */
   postRecord(callback) {
-    /**
-     * Write the body for this function.
-     * The function is a wrapper for this.connector's post() method.
-     * Note how the object was instantiated in the constructor().
-     * post() takes a callback function.
-     */
+      log.info("Calling ............................postRecord");
      let callbackData = null;
     let callbackError = null;
   
-    
     this.connector.post(this.connector,(data, error) => {
    if (error) {
     
@@ -254,25 +205,22 @@ this.connector.get((data, error) => {
     callbackData=data;
     
    var jsonstring = JSON.stringify(data);
-    
-    let jsonObject =  JSON.parse(jsonstring);//eval('(' + jsonstring + ')');
-    let jsonbodystirng = JSON.stringify(jsonObject.body);
+   let jsonObject =  JSON.parse(jsonstring);
     let jsonresultobj = JSON.parse(jsonObject.body);
+    log.info("PostRecord -------jsonresultobj.result.length means the length of the array::"+jsonresultobj.result.length);
      let servicejsonobj= JSON.stringify(jsonresultobj.result[0]);
     let jsonresultobjresult = JSON.parse(servicejsonobj);
-    let servicejsonObjResult={
-                               change_ticket_number: jsonresultobjresult.number,
-                                active: jsonresultobjresult.active,
-                                priority: jsonresultobjresult.priority,
-                                description: jsonresultobjresult.description,
-                                work_start: jsonresultobjresult.work_start,
-                                work_end: jsonresultobjresult.work_end,
-                                change_ticket_key: jsonresultobjresult.sys_id
+    let serviceNowjsonResult={
+         change_ticket_number: jsonresultobjresult.number,
+         active: jsonresultobjresult.active,
+         priority: jsonresultobjresult.priority,
+         description: jsonresultobjresult.description,
+         work_start: jsonresultobjresult.work_start,
+         work_end: jsonresultobjresult.work_end,
+         change_ticket_key: jsonresultobjresult.sys_id
                             }
-        return callback(servicejsonObjResult, callbackError);
+        return callback(serviceNowjsonResult, callbackError);
   });
   }
-
 }
-
 module.exports = ServiceNowAdapter;

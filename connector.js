@@ -57,6 +57,7 @@ class ServiceNowConnector {
    * @param {error} callback.error - The error property of callback.
    */
   get(callback) {
+    log.info("calling get in connector.>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     let getCallOptions = this.options;
     getCallOptions.method = 'GET';
     getCallOptions.query = 'sysparm_limit=1';
@@ -79,8 +80,10 @@ class ServiceNowConnector {
    * @param {error} callback.error - The error property of callback.
    */
   post(callback) {
+      log.info("calling POST in connector.>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     let postCallOptions = this.options;
     postCallOptions.method = 'POST';
+    postCallOptions.query = null;
     this.sendRequest(postCallOptions, (results, error) => callback(results, error));
   }
 
@@ -184,10 +187,13 @@ class ServiceNowConnector {
   // Initialize return arguments for callback
   let uri;
   let me;
+  log.info("callOptions.query>>>>>>>>>>>>>>>>>>>>>>"+callOptions.query);
   if (callOptions.query){
+      log.info("IFFFFF>>>>>>>>>>>>>>>>>>>>>>>");
     uri = this.constructUri(callOptions.serviceNowTable, callOptions.query);
     me = 'GET';
   }else{
+      log.info("Else>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     uri = this.constructUri(callOptions.serviceNowTable);
     me = 'POST';
   }
@@ -206,6 +212,8 @@ class ServiceNowConnector {
     baseUrl: this.options.url,
     uri,
   };
+  log.info("sendrequest uri >>>>>>>>>>>>>>>>>>>>>>>>>>>"+uri);
+  log.info("sendrequest baseUrlbaseUrl >>>>>>>>>>>>>>>>>>>>>>>>>>>"+baseUrl);
   request(requestOptions, (error, response, body) => {
     this.processRequestResults(error, response, body, (processedResults, processedError) => callback(processedResults, processedError));
   });
