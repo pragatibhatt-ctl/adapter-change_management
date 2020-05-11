@@ -40,10 +40,10 @@
   "input": [],
   "output": {
     "name": "changeTicket",
-    "type": "array",
+    "type": "object",
     "description": "An change management ticket document.",
     "schema": {
-      "type": "array",
+      "type": "object",
       "items": {
         "title": "changeTicket",
         "$ref": "changeRequest#/definitions/changeTicket"
